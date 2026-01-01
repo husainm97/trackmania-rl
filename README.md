@@ -13,7 +13,7 @@ The core engine establishing communication between the Python modules and the ga
 
 ```steer = -np.tanh(10 * (right - left) / (left + right + 1e-5))```
 
-![LIDAR_Heuristic](images/LIDAR_Heuristic.gif)
+<img src="images/LIDAR_Heuristic.gif" width="100%" />
 ---
 
 ## 🔹 Progress So Far
