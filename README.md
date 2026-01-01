@@ -9,7 +9,9 @@ This project is under **active development**, with frequent updates as new modul
 
 The goal of this repository is to develop an RL agent that can autonomously drive, navigate, and optimize performance in TrackMania 2020, an arcade formula racing game. Using Python, PyTorch, and TMRL, the agent's goal will be to use in-game telemetry, including LIDAR, speed, and previous actions, to learn optimal racing behavior.
 
-The core engine establishing communication between the Python modules and the game is established, heuristic models successfully complete tracks.
+The core engine establishing communication between the Python modules and the game is established, heuristic models successfully complete tracks. The illustration below shows the agent's view as a LIDAR dashboard in blue and the chosen steering action as a red arc. Throttle is currently limited to release when over 8m/s. Brakes are applied if "too close" to a wall to ease steering. Steering model output (-1, 1) is defined by: 
+
+```steer = -np.tanh(10 * (right - left) / (left + right + 1e-5))```
 
 ![LIDAR_Heuristic](images/LIDAR_Heuristic.gif)
 ---
@@ -29,6 +31,7 @@ The core engine establishing communication between the Python modules and the ga
 - Fine-tune input frequency and control loop timing for smoother driving.
 - Integrate **TMInterface** for faster, more efficient training cycles.
 - Build the training loop and define the reward function: maximize distance, minimize lap time, and stay close to an "optimal" trajectory.
+- Implement random respwans to prevent overlearning start of the track.
 - Expand LIDAR-based perception and temporal memory for more aggressive racing strategies.
 
 ---
