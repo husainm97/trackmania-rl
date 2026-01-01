@@ -4,19 +4,33 @@ import time
 import numpy as np
 from tmrl import get_environment
 
-import pyautogui
 import time
 
 from tm_interface.telemetry import Telemetry 
-
+import matplotlib.pyplot as plt
 telem = Telemetry()
 telem.start_listener()
+
+def model(obs):
+    """
+    simplistic policy for LIDAR observations
+    """
+    deviation = obs[1].mean(0)
+    deviation /= (deviation.sum() + 0.01)
+    steer = 0
+    for i in range(19):
+        steer += (i - 9) * deviation[i] 
+    steer = - np.tanh(steer * 2)
+    steer = min(max(steer, -1.0), 1.0)
+    return np.array([1.0, 0.0, steer])
+
 
 def main():
     """
     Initializes a TMRL gymnasium environment, drives the car forward with random steering
     for 60 seconds, and logs environment information.
     """
+
     env = None
     try:
         # Initialize the TMRL environment.
@@ -40,24 +54,29 @@ def main():
 
         throttle = 1.0
         brake = 0.0
+        drive_forward_action = np.array([throttle, brake, 0.0], dtype=np.float32)
+        #observation, reward, terminated, truncated, info = env.step(drive_forward_action)
         while time.perf_counter() - start_time < 600.0:
-            steer = np.random.rand() * 2 - 1 
+            #steer = np.random.rand() * 2 - 1 
 
-
-            drive_forward_action = np.array([throttle, brake, steer], dtype=np.float32)
+            #drive_forward_action = np.array([throttle, brake, steer], dtype=np.float32)
             # Send the "drive forward" action to the environment.
             # `env.step` returns the new observation, reward, termination flags, and an info dict.
-            observation, reward, terminated, truncated, info = env.step(drive_forward_action)
+            act = model(observation)  # compute action
+            #act = [0,0,0]
+            observation, reward, terminated, truncated, info = env.step([1,0,0])
 
             # Print default tmrl game state information 
-            print(f"Time: {time.perf_counter() - start_time:.2f}s | "
-                f"Speed: {observation[0][0]:.2f} m/s | "
-                f"Gear: {int(observation[1][0])} | "
-                f"Distance: {observation[2][0]:.2f} m")
+            #print(f"Time: {time.perf_counter() - start_time:.2f}s | "
+            #    f"Speed: {observation[0][0]:.2f} m/s | "
+            #    f"Gear: {int(observation[1][0])} | "
+            #    f"Distance: {observation[2][0]:.2f} m")
             
             # Print telemetry snapshot
             snapshot = telem.get_snapshot()
-            print(snapshot)
+            #print(snapshot)
+
+            '''
             if snapshot:
                 print(
                     f"Telemetry | Pos: {snapshot.get('pos')} | "
@@ -66,8 +85,10 @@ def main():
                     f"RPM: {snapshot.get('rpm', 0)} | "
                     f"SlipFL: {snapshot.get('slipFL', 0)}"
                 )
+            '''
     
             speed = observation[0][0]
+            #print(observation)
 
             # Check for termination. If the car crashes or finishes the track, the episode ends.
             if terminated or truncated:

@@ -22,6 +22,7 @@ URI = f"ws://127.0.0.1:{PORT}/vstate"
 logging.basicConfig(level=logging.INFO, format="[Telem] %(message)s")
 
 
+
 class Telemetry:
     _snapshot: Optional[dict] = None
     _server_thread: Optional[threading.Thread] = None
@@ -69,15 +70,75 @@ class Telemetry:
 
                 # Store relevant vehicle state
                 cls._snapshot = {
+                    # time & kinematics
+                    "t": data.get("t"),
                     "spd": data.get("spd"),
+                    "sspd": data.get("sspd"),
                     "pos": data.get("pos"),
+                    "accel": data.get("accel"),
+                    "jerk": data.get("jerk"),
+
+                    # controls & state
+                    "steer": data.get("steer"),
+                    "throttle": data.get("throttle"),
+                    "brake": data.get("brake"),
+                    "finished": data.get("finished"),
+
+                    # drivetrain / engine
                     "rpm": data.get("rpm"),
                     "gear": data.get("gear"),
-                    "slipFL": data.get("slipFL"),
-                    "slipFR": data.get("slipFR"),
-                    "slipRL": data.get("slipRL"),
-                    "slipRR": data.get("slipRR"),
+                    "cruiseSpd": data.get("cruiseSpd"),
+                    "vehType": data.get("vehType"),
+
+                    # reactor / environment
+                    "reactorAC": data.get("reactorAC"),
+                    "reactorT": data.get("reactorT"),
+                    "lastTurbo": data.get("lastTurbo"),
+                    "reactorGnd": data.get("reactorGnd"),
+                    "groundDist": data.get("groundDist"),
+                    "groundContact": data.get("groundContact"),
+
+                    # front-left wheel
+                    "FL": {
+                        "steerAng": data.get("FL", {}).get("steerAng"),
+                        "rot":      data.get("FL", {}).get("rot"),
+                        "damper":   data.get("FL", {}).get("damper"),
+                        "slip":     data.get("FL", {}).get("slip"),
+                        "mat":      data.get("FL", {}).get("mat"),
+                        "dirt":     data.get("FL", {}).get("dirt"),
+                        "fall":     data.get("FL", {}).get("fall"),
+                    },
+
+                    # front-right wheel
+                    "FR": {
+                        "steerAng": data.get("FR", {}).get("steerAng"),
+                        "rot":      data.get("FR", {}).get("rot"),
+                        "damper":   data.get("FR", {}).get("damper"),
+                        "slip":     data.get("FR", {}).get("slip"),
+                        "mat":      data.get("FR", {}).get("mat"),
+                        "dirt":     data.get("FR", {}).get("dirt"),
+                        "fall":     data.get("FR", {}).get("fall"),
+                    },
+
+                    # rear-left wheel
+                    "RL": {
+                        "damper": data.get("RL", {}).get("damper"),
+                        "slip":   data.get("RL", {}).get("slip"),
+                        "mat":    data.get("RL", {}).get("mat"),
+                        "dirt":   data.get("RL", {}).get("dirt"),
+                        "fall":   data.get("RL", {}).get("fall"),
+                    },
+
+                    # rear-right wheel
+                    "RR": {
+                        "damper": data.get("RR", {}).get("damper"),
+                        "slip":   data.get("RR", {}).get("slip"),
+                        "mat":    data.get("RR", {}).get("mat"),
+                        "dirt":   data.get("RR", {}).get("dirt"),
+                        "fall":   data.get("RR", {}).get("fall"),
+                    },
                 }
+
         except websockets.ConnectionClosedOK:
             pass
         except websockets.ConnectionClosedError as exc:
