@@ -1,6 +1,6 @@
 # 🚀 TrackMania RL
 
-🔴🔴🔴🔴🔴
+🔴🔴🔴🔴🔴  
 ⚫️⚫️⚫️⚫️⚫️
 
 Aim: **Train an AI agent to master TrackMania (2020) in real time using reinforcement learning.**  
