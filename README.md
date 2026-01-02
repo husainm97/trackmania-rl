@@ -17,6 +17,8 @@ The core engine establishing communication between the Python modules and the ga
 
 ```steer = -np.tanh(10 * (right - left) / (left + right + 1e-5))```
 
+where ```right``` and ```left``` are the summed ray distances on each side.
+
 <img src="images/LIDAR_Heuristic.gif" width="100%" />
 ---
 
