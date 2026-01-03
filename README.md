@@ -19,7 +19,7 @@ The core engine establishing communication between the Python modules and the ga
 
 where ```right``` and ```left``` are the summed ray distances on each side.
 
-<img src="images/LIDAR_DEMO_2.gif" width="100%" />
+<img src="images/LIDAR_Heuristic.gif" width="100%" />
 ---
 
 ## 📈 Progress So Far
