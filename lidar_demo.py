@@ -1,5 +1,7 @@
 # lidar_demo.py
-
+"""
+This is a simple demo that runs a heuristic "wall avoiding model", that drives at slow speeds and turns away from black walls. The model is able to consistently complete flat road tracks.
+"""
 import time
 import numpy as np
 from tmrl import get_environment
@@ -29,7 +31,6 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from tmrl import get_environment
-
 # --- GLOBAL for live plot ---
 lidar_line = None
 
@@ -44,41 +45,45 @@ def wall_avoiding_model(obs):
     """
     global lidar_line
     lidar = obs[1]              # shape (4, 19)
-    avg_lidar = lidar.mean(axis=0)  # average last 4 frames
+    avg_lidar_base = lidar.mean(axis=0)  # average last 4 frames
 
+    # Increase centre ray sensitivity
+    avg_lidar = avg_lidar_base.copy()
+    avg_lidar[3:16] = avg_lidar_base[3:16] * 2 
     # --- Steering: bias away from obstacles --ii
     left   = avg_lidar[:9].sum()
     center = avg_lidar[9]
     right  = avg_lidar[10:].sum()
-    steer = 5 * (right - left) / (left + right + 1e-5)
-    steer = -np.tanh(steer * 2)
+    steer = 12 * (right - left) / (left + right + 1e-5)
+    steer = -np.tanh(steer)
 
     # --- Throttle / brake ---
     speed = obs[0][0] if isinstance(obs[0], np.ndarray) else obs[0]
     throttle = 1.0
     brake = 0.0
-    if speed > 8.0:
+    
+    if speed > 10.0:
         throttle = 0.0
-    if center < 1.5:  # obstacle ahead
+
+    if (np.abs(steer) > 0.4 and speed > 12.0):
         throttle = 0.0
-        brake = 1.0
+        brake = 1.0 
 
     # --- Live LIDAR plot ---
-    theta = np.linspace(-np.pi/2, np.pi/2, len(avg_lidar))
-    r = avg_lidar
+    theta = np.linspace(-np.pi/2, np.pi/2, len(avg_lidar_base))
+    r = avg_lidar_base
     if lidar_line is not None:
-        lidar_line.set_data(theta, r)
+        lidar_line.set_data(-theta, r)
 
         # --- Steering arrow ---
         steer_angle = steer * (np.pi/2)  # map -1..1 to -90..+90 degrees
-        steer_r = max(r.max() * 1.1, 5)  # arrow length just beyond LIDAR
+        steer_r = max(r.max() * 1.1, 5)  # iirrow length just beyond LIDAR
         if hasattr(wall_avoiding_model, "steer_arrow"):
             wall_avoiding_model.steer_arrow.remove()  # remove previous arrow
         wall_avoiding_model.steer_arrow = plt.arrow(
             steer_angle, 0, 0, steer_r,
-            width=0.03, color='r', alpha=0.8, zorder=5
+            width=0.03, color='r', alpha=0.8, zorder=5,
         )
-
         plt.draw()
         plt.pause(0.001)
 

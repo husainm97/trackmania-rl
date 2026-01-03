@@ -19,7 +19,7 @@ The core engine establishing communication between the Python modules and the ga
 
 where ```right``` and ```left``` are the summed ray distances on each side.
 
-<img src="images/LIDAR_Heuristic.gif" width="100%" />
+<img src="images/LIDAR_DEMO_2.gif" width="100%" />
 ---
 
 ## 📈 Progress So Far
@@ -42,12 +42,17 @@ where ```right``` and ```left``` are the summed ray distances on each side.
 ---
 ## 💡 Concept
 
-The core model blueprint is a Convolutional Neural Network (CNN) paired with Long Short-Term Memory (LSTM) units. This allows the model to effectively process both high-dimensional spatial features (visual track data) and temporal dependencies (the car's momentum and history over time).
+The core model blueprint is a Convolutional Neural Network (CNN) paired with Long Short-Term Memory (LSTM) units. This allows the model to effectively process both high-dimensional spatial features (visual track data) and temporal dependencies (the car's momentum and history over time). LIDAR vision is illustrated below: 
+
+<img src="images/video_lidar.gif" width="100%" />
 
 Models could be trained using only live information, to produce a "generalist" AI, as well as with track information to anticipate upcoming turns. 
 
 ---
 ## 🏁 Finish Line
+
+The first aim of this project is to train a purely vision based actor to compete in the [Roborace leage](https://github.com/trackmania-rl/tmrl/blob/master/readme/competition.md) (generalist AI). 
+With that first step, the focus turns to a hybrid model that also "knows" the track to optimise racing lines.
 
 The project will be considered complete when I am not longer able to beat the AI. 
 
